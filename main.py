@@ -44,8 +44,44 @@ from agents import input_guardrail, output_guardrail , GuardrailFunctionOutput
 @function_tool
 def great(nmae: str)  -> str:
     """Great a person by name."""
-    return f"Hello {os.name}: Welcome to Agentic AI hub!`"
+    return f"Hello {os.name}: Welcome to Agentic AI hub!"
 
+
+guardrail_agent = Agent(
+    name = "guardrail agent",
+    instructions="you are a helpful assistant that can answer questions and perform tasks for the user",
+    model=get_model()
+
+)
+
+
+
+@input_guardrail
+async def check_input(ctx, agent , input ) -> GuardrailFunctionOutput:
+    """Check if the user input is valid."""
+    if len(user_input) < 5:
+        return GuardrailFunctionOutput(
+            is_valid=False,
+            message="Input is too short. Please provide more details."
+        )
+    return GuardrailFunctionOutput(
+        is_valid=True,
+        message="Input is valid."
+    )
+
+@output_guardrail
+async def check_output(ctx, agent , output ) -> GuardrailFunctionOutput:
+    """Ensure output don't contain any sensitive information."""
+    # Example check (replace with actual sensitive information detection logic)
+    if "secret" in output.lower():
+        return GuardrailFunctionOutput(
+            is_valid=False,
+            message="Output contains sensitive information."
+        )
+    return GuardrailFunctionOutput(
+        is_valid=True,
+        message="Output is valid."
+    )
 
 agent = Agent(
     name = "my agent",
